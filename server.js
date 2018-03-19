@@ -75,18 +75,19 @@ app.get('/studentdata', function (req, res) {
   MongoClient.connect(url, function(err, db) {
   if (err) throw err;
   var dbo = db.db("mydb");
-  
+  var stu_database;
   dbo.collection("student").find({},{_id:0}).toArray(function(err, result) {
     if (err) throw err;
-    //res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Type', 'application/json');
     //res.send(result);
     console.log(result);
-    res.setHeader('Content-Type','application/json');
+    //res.setHeader('Content-Type','application/json');
     stu_database= result;
     db.close();
+    res.send(stu_database);
   });
-  res.setHeader('Content-Type', 'application/json');
-  res.send(stu_database);
+  //res.setHeader('Content-Type', 'application/json');
+  
 });
 })
 
@@ -96,11 +97,13 @@ app.post('/student_sorted',function(req, res){
 	MongoClient.connect(url, function(err, db) {
   	if (err) throw err;
   	var dbo = db.db("mydb");
-  	var approx = "/"+req.body.name+"/"
+  	var approx = req.body.name
   	var myobj = {firstName: approx};
 	res.setHeader('Content-Type', 'application/json');
 	console.log(myobj);
-  	dbo.collection("student").find(myobj).toArray(function(err, result) {
+  	dbo.collection("student").find({firstName:new RegExp(approx)}).toArray(function(err, result) {
+  		//db.users.find(name: new RegExp(search));
+
     if (err) throw err;
     //res.setHeader('Content-Type', 'application/json');
     //res.send(result);
